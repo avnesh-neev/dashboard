@@ -55,14 +55,7 @@
         
         
     </head>
-    <body>
-        <?php
-//            echo $_POST['selName'];
-//            echo $_POST['sizeValue'];
-//            echo $_POST['searchField'];
-        ?>
-        
-        
+    <body>      
         <div id="wrap">
 
       <!-- Fixed navbar -->
@@ -78,14 +71,13 @@
           </div>
           <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#"><span class="glyphicon glyphicon-dashboard" style="margin-right: 4px;"></span><span>Dashboard</span></a></li>
+                <li class="active"><a href="dash.php"><span class="glyphicon glyphicon-dashboard" style="margin-right: 4px; height: 30px;"></span><span>Dashboard</span></a></li>
                 <li><a href="search.php"><span class="glyphicon glyphicon-search" style="margin-right: 4px;"></span><span>Search</span></a></li>
                 <li><a href="#alert"><span class="glyphicon glyphicon-bell "style="margin-right: 4px;"></span><span>Alerts</span></a></li>
             </ul>
               <ul class="nav navbar-nav navbar-right">
-<!--            <li><a href="../navbar/">Default</a></li>
-            <li><a href="../navbar-static-top/">Static top</a></li>-->
-            <li class="active"><a href="logout.php">LogOut</a></li>
+
+            <li class="active"><a href="logout.php" style="height: 50px;">LogOut</a></li>
           </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -120,7 +112,7 @@
                         <option value="50">50 logs record</option>
                     </select>
                      </span>
-                        <span class="floatLeft" style="margin-left: 5px;">
+                        <span class="floatLeft" style="margin-left: 5px; margin-top: 5px;">
                     <button class="btn btn-primary" type="submit" style="margin-right: 5px; margin-top: -5px;" type="submit">search</button>
                     </span>
                     </form>
@@ -136,8 +128,9 @@
                   
               </div>
               <div class="col-md-10 menu12" id="serverData">
-                  <?php
-                  
+<!--                  here this php code will fatch data from server, here curl Php has used--> 
+
+                  <?php                 
                   if($_POST['selName'] && $_POST['sizeValue'] && $_POST['searchField']){
                     $ch = curl_init();
                     curl_setopt_array($ch, array(
@@ -145,11 +138,11 @@
                         CURLOPT_RETURNTRANSFER => true,
                         CURLOPT_USERPWD => 'avnesh:loggly18'
                     ));
-
+//                    here all credentials has put for login in loggly account, so that It can fatch data
+                    
                     $output = curl_exec($ch);
                     $jsonData = json_decode($output,true);
                     $id = $jsonData["rsid"]["id"];
-//                    echo "$id";
                     curl_setopt_array($ch, array(
                         CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/events?rsid='.$id,
                         CURLOPT_RETURNTRANSFER => true,
@@ -316,7 +309,7 @@
         
         
         
-<!--        <script type="text/javascript" src="/dashboard/bootstrap-select/bootstrap-select.js"></script>-->
+
         <script type="text/javascript" src="/dashboard/assets/js/jquery.js"></script>
         <script type="text/javascript" src="/dashboard/dist/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/dashboard/assets/js/holder.js"></script>

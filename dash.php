@@ -73,14 +73,14 @@
           </div>
           <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#"><span class="glyphicon glyphicon-dashboard" style="margin-right: 8px;"></span><span>Dashboard</span></a></li>
+                <li class="active"><a href="#"><span class="glyphicon glyphicon-dashboard" style="margin-right: 8px;  height: 30px;"></span><span>Dashboard</span></a></li>
                 <li><a href="search.php"><span class="glyphicon glyphicon-search" style="margin-right: 8px;"></span><span>Search</span></a></li>
                 <li><a href="#alert"><span class="glyphicon glyphicon-bell "style="margin-right: 8px;"></span><span>Alerts</span></a></li>
             </ul>
               <ul class="nav navbar-nav navbar-right">
 <!--            <li><a href="../navbar/">Default</a></li>
             <li><a href="../navbar-static-top/">Static top</a></li>-->
-            <li class="active"><a href="logout.php">LogOut</a></li>
+            <li class="active"><a href="logout.php" style="height: 50px;">LogOut</a></li>
           </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -134,21 +134,25 @@
                   
               </div>
               <div class="col-md-10 menu12" id="serverData">
-<!--                  here this php code will fatch data from server-->
+<!--                  here this php code will fatch data from server, here curl Php has used-->
                   <?php
                   
                   if($_POST['selName'] && $_POST['sizeValue']){
                     $ch = curl_init();
+//                    here all credentials has put for login in loggly account, so that It can fatch data
+                    
                     curl_setopt_array($ch, array(
                         CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/search?q=*&from='.$_POST['selName'].'&until=now&size='.$_POST['sizeValue'],
                         CURLOPT_RETURNTRANSFER => true,
                         CURLOPT_USERPWD => 'avnesh:loggly18'
                     ));
-
+                    
+//                    here it has got data from loggly, and will hold in a variable
+                    
                     $output = curl_exec($ch);
                     $jsonData = json_decode($output,true);
                     $id = $jsonData["rsid"]["id"];
-//                    echo "$id";
+
                     curl_setopt_array($ch, array(
                         CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/events?rsid='.$id,
                         CURLOPT_RETURNTRANSFER => true,

@@ -18,7 +18,7 @@ if($result1)
     // Count how many row has this passkey
     $count=mysqli_num_rows($result1);
 
-    // if found this passkey in our database, retrieve data from table "temp_members_db"
+    // if found this passkey in our database, retrieve data from table "verifyMail"
     if($count==1)
     {
 
@@ -30,12 +30,17 @@ if($result1)
         $pass = $rows['password'];
         $username = $rows['usename'];
 
-        // Insert data that retrieves from "temp_members_db" into table "registered_members" 
+        // Insert data that retrieves from "verifyMail" into table "users" 
         $sql2="INSERT INTO users(user_name, email, gender, password, usename) VALUES('$name','$email','$gen','$pass','$username')";
         $result2=mysqli_query($sql2);
 
         if (!mysqli_query($con, $sql2))
         {
+          if(mysqli_error($con) == "Duplicate entry 'avnesh123' for key 'usename'")
+          {
+              echo "You have already register";
+              exit ();
+          }
           die('Error: ' . mysqli_error($con));
         }
         $msz = "Hurry, Your account has been activate.";

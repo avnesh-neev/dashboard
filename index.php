@@ -1,3 +1,5 @@
+<!--This page is contained Registration and Login form, After login, user can use dashboard here. -->
+
 <!-- here this php code for check user is already login or not, means he didn't log out then he should be login-->
 <?php
 session_start();
