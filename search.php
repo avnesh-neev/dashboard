@@ -135,64 +135,77 @@
               <div class="col-md-10 menu12" id="serverData">
 <!--                  here this php code will fatch data from server, here curl Php has used--> 
 
-                  <?php                 
-                  if($_POST['selId'] && $_POST['selId12'] && $_POST['searchField']){
-                    $ch = curl_init();
-                    curl_setopt_array($ch, array(
-                        CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/search?q='.$_POST['searchField'].'&from='.$_POST['selName'].'&until=now&size='.$_POST['sizeValue'],
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_USERPWD => 'avnesh:loggly18'
-                    ));
-//                    here all credentials has put for login in loggly account, so that It can fatch data
-                    
-                    $output = curl_exec($ch);
-                    $jsonData = json_decode($output,true);
-                    $id = $jsonData["rsid"]["id"];
-                    curl_setopt_array($ch, array(
-                        CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/events?rsid='.$id,
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_USERPWD => 'avnesh:loggly18'
-                    ));
-                  }
-                  else{
-                      $ch = curl_init();
-                    curl_setopt_array($ch, array(
-                        CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/search?q=*&from=-7d&until=now&size=500',
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_USERPWD => 'avnesh:loggly18'
-                    ));
+             <?php
+             
+                class LogglySearchClass
+                {
+                    public function extractData()
+                    {
+                       if($_POST['selId'] && $_POST['selId12'] && $_POST['searchField'])
+                       {
+                         $ch = curl_init();
 
-                    $output = curl_exec($ch);
-                    $jsonData = json_decode($output,true);
-                    $id = $jsonData["rsid"]["id"];
-//                    echo "$id";
-                    curl_setopt_array($ch, array(
-                        CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/events?rsid='.$id,
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_USERPWD => 'avnesh:loggly18'
-                    ));
-                  }
-                  
-                  $_POST['selName'] = NULL;
-                  $_POST['sizeValue'] = NULL;  
-                  $_POST['searchField'] = NULL;
-                  
-                    $totalLogData = curl_exec($ch);
-                    $jsons = json_decode($totalLogData, true);
-                   
-                    
-                    foreach ($jsons as $key=>$value)
-                    { 
-                        if($key=="total_events"){
-                            echo "<div style='margin-top=-100px;'><p style='font-size: 30px;'>".$value." Events</p></div>";
-                        }
-                        
-                        if($key == "events")
-                        {
-                            echo "<div style='background-color:#E6E4D1; height: 30px;'><p style='margin-left:10px;'>Events:</p>"."</div>";
-                            $k = json_decode($value, true);
-                            foreach ($value as $arr) 
-                            {
+                         //here all credentials has put for login in loggly account, so that It can fatch data
+                         curl_setopt_array($ch, array(
+                           CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/search?q='.$_POST['searchField'].'&from='.$_POST['selName'].'&until=now&size='.$_POST['sizeValue'],
+                           CURLOPT_RETURNTRANSFER => true,
+                           CURLOPT_USERPWD => 'avnesh:loggly18'
+                         ));
+
+                         //here it has got data from loggly, and will hold in a variable   
+                         $output = curl_exec($ch);
+                         $jsonData = json_decode($output,true);
+                         $id = $jsonData["rsid"]["id"];
+
+                         curl_setopt_array($ch, array(
+                           CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/events?rsid='.$id,
+                           CURLOPT_RETURNTRANSFER => true,
+                           CURLOPT_USERPWD => 'avnesh:loggly18'
+                         ));
+                       }
+                       else
+                       {
+                         $ch = curl_init();
+                         curl_setopt_array($ch, array(
+                           CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/search?q=*&from=-7d&until=now&size=500',
+                           CURLOPT_RETURNTRANSFER => true,
+                           CURLOPT_USERPWD => 'avnesh:loggly18'
+                         ));
+
+                         $output = curl_exec($ch);
+                         $jsonData = json_decode($output,true);
+                         $id = $jsonData["rsid"]["id"];
+                         curl_setopt_array($ch, array(
+                           CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/events?rsid='.$id,
+                           CURLOPT_RETURNTRANSFER => true,
+                           CURLOPT_USERPWD => 'avnesh:loggly18'
+                         ));
+                       }
+                       $_POST['selId'] = NULL;
+                       $_POST['selId12'] = NULL;
+                       $_POST['searchField'] = NULL;  
+                       $totalLogData = curl_exec($ch);
+                       return json_decode($totalLogData, true);
+                    }
+
+                    public function diplayDataUI()
+                    {
+                        $jsons = $this->extractData();
+
+                        // code for showing data on UI
+                        foreach ($jsons as $key=>$value)
+                        { 
+                           if($key=="total_events")
+                           {
+                             echo "<div style='margin-top=-100px;'><p style='font-size: 30px;'>".$value." Events</p></div>";
+                           }
+
+                           if($key == "events")
+                           {
+                             echo "<div style='background-color:#E6E4D1; height: 30px;'><p style='margin-left:10px;'>Events:</p>"."</div>";
+                             $k = json_decode($value, true);
+                             foreach ($value as $arr) 
+                             {
                                 echo "<div style='margin-top:6px;' class='list'>";
                                 echo "<span>";
                                 foreach ($arr as $key1 => $value1)
@@ -203,7 +216,7 @@
                                     }
                                 }
                                 echo "<ul class='ulBullet glyphicon glyphicon-chevron-down'>";
-                                
+
                                 foreach ($arr as $key1 => $value1) 
                                 {
                                     echo "<li>";
@@ -219,17 +232,17 @@
                                         }
                                         echo "],</ul>";
                                     }
-                                    
+
                                     if($key1=="timestamp")
                                     {
                                         echo "<p style='font-size: 15px;'  style='margin-left:9px;'>".$key1.":</p>"."<p style='margin-left:9px;'>"."\"".$value1."\""."</p>";
                                     }
-                                    
+
                                     if($key1=="logmsg")
                                     {
                                         echo "<p style='font-size: 15px;'>".$key1.":</p>"."<p style='margin-left:9px;'>"."\"".$value1."\""."</p>";
                                     }
-                                    
+
                                     if($key1=="event")
                                     {
                                         echo "<p style='font-size: 15px;'>".$key1.":</p>";
@@ -249,7 +262,7 @@
                                         }
                                         echo "}</ul>";
                                     }
-                                    
+
                                     if($key1=="logtypes")
                                     {
                                         echo "<p style='font-size: 15px;'>".$key1.":</p>";
@@ -262,8 +275,8 @@
                                         }
                                         echo "</ul>";
                                     }
-                                    
-                                    
+
+
                                     if($key1=="id")
                                     {
                                         echo "<p style='font-size: 15px;'>".$key1.":</p>"."<p>"."<p style='margin-left:9px;'>"."\"".$value1."\""."</p>";
@@ -275,10 +288,15 @@
                                 echo "<hr id='hrLine'></hr>";
                                 echo "</div>";
                             }
-                        }
-                        
+                         }
+
+                       }
                     }
-                ?>
+                }
+                $objUI = new LogglyClass();
+                $objUI->diplayDataUI();
+                
+           ?>
               </div>
           </div>
       </div>
