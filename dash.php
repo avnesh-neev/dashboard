@@ -99,17 +99,25 @@
                 <div class="col-md-8" style="margin-top: 10px;">
                     <form class="form-signin" method="POST" action="dash.php" name="myForm">
                         <span class="floatLeft" style="margin-left: 5px;">
-                            <select id="selId" name="selName">
-                                <option value="-2d">Last 2 days</option>
-                                <option value="-1d">last 1 day</option>
-                                <option value="-12h">last 12 haurs</option>
+                            <select id="selId" name="selId">
+                                <option value="-7d">Last 7 days</option>
+                                <option value="-5d">Last 5 days</option>
+                                <option value="-3d">Last 3 days</option>
+                                <option value="-1M">Last 1 month</option>
+                                <option value="-2h">Last 2 hours</option>
+                                <option value="-1h">last 1 hour</option>
+                                <option value="-12h">last 12 hours</option>
+                                <option value="-10m">last 10 minutes</option>
+                                <option value="-30m">last 30 minutes</option>
                             </select>
                         </span>
                      <span class="floatLeft" style="margin-left: 5px;">   
-                            <select id="selId12" name="sizeValue">
-                                <option value="10">10 logs record</option>
-                                <option value="20">20 logs record</option>
-                                <option value="50">50 logs record</option>
+                            <select id="selId12" name="selId12">
+                                <option value="10">10 results per page</option>
+                                <option value="20">20 results per page</option>
+                                <option value="30">30 results per page</option>
+                                <option value="50">50 results per page</option>
+                                <option value="100">100 results per page</option>
                             </select>
                      </span>
                     <span class="floatLeft" style="margin-left: 5px;">
@@ -135,153 +143,171 @@
               </div>
               <div class="col-md-10 menu12" id="serverData">
 <!--                  here this php code will fatch data from server, here curl Php has used-->
+
                   <?php
-                  
-                  if($_POST['selName'] && $_POST['sizeValue']){
-                    $ch = curl_init();
-//                    here all credentials has put for login in loggly account, so that It can fatch data
-                    
-                    curl_setopt_array($ch, array(
-                        CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/search?q=*&from='.$_POST['selName'].'&until=now&size='.$_POST['sizeValue'],
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_USERPWD => 'avnesh:loggly18'
-                    ));
-                    
-//                    here it has got data from loggly, and will hold in a variable
-                    
-                    $output = curl_exec($ch);
-                    $jsonData = json_decode($output,true);
-                    $id = $jsonData["rsid"]["id"];
-
-                    curl_setopt_array($ch, array(
-                        CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/events?rsid='.$id,
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_USERPWD => 'avnesh:loggly18'
-                    ));
-                  }
-                  else{
-                      $ch = curl_init();
-                    curl_setopt_array($ch, array(
-                        CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/search?q=*&from=-2d&until=now&size=500',
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_USERPWD => 'avnesh:loggly18'
-                    ));
-
-                    $output = curl_exec($ch);
-                    $jsonData = json_decode($output,true);
-                    $id = $jsonData["rsid"]["id"];
-                    curl_setopt_array($ch, array(
-                        CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/events?rsid='.$id,
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_USERPWD => 'avnesh:loggly18'
-                    ));
-                  }
-                  
-                  $_POST['selName'] = NULL;
-                  $_POST['sizeValue'] = NULL;  
-                  
-                    $totalLogData = curl_exec($ch);
-                    $jsons = json_decode($totalLogData, true);
-                   
-                    
-                    foreach ($jsons as $key=>$value)
-                    { 
-                        if($key=="total_events"){
-                            echo "<div style='margin-top=-100px;'><p style='font-size: 30px;'>".$value." Events</p></div>";
-                        }
-                        
-                        if($key == "events")
+                    class LogglyClass
+                    {
+                        public function extractData()
                         {
-                            echo "<div style='background-color:#E6E4D1; height: 30px;'><p style='margin-left:10px;'>Events:</p>"."</div>";
-                            $k = json_decode($value, true);
-                            foreach ($value as $arr) 
-                            {
-                                echo "<div style='margin-top:6px;' class='list'>";
-                                echo "<span>";
-                                foreach ($arr as $key1 => $value1)
-                                {
-                                    if($key1=="logmsg")
+                           if($_POST['selId'] && $_POST['selId12'] && $_POST['searchField'])
+                           {
+                             $ch = curl_init();
+
+                             //here all credentials has put for login in loggly account, so that It can fatch data
+                             curl_setopt_array($ch, array(
+                               CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/search?q='.$_POST['searchField'].'&from='.$_POST['selName'].'&until=now&size='.$_POST['sizeValue'],
+                               CURLOPT_RETURNTRANSFER => true,
+                               CURLOPT_USERPWD => 'avnesh:loggly18'
+                             ));
+
+                             //here it has got data from loggly, and will hold in a variable   
+                             $output = curl_exec($ch);
+                             $jsonData = json_decode($output,true);
+                             $id = $jsonData["rsid"]["id"];
+
+                             curl_setopt_array($ch, array(
+                               CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/events?rsid='.$id,
+                               CURLOPT_RETURNTRANSFER => true,
+                               CURLOPT_USERPWD => 'avnesh:loggly18'
+                             ));
+                           }
+                           else
+                           {
+                             $ch = curl_init();
+                             curl_setopt_array($ch, array(
+                               CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/search?q=*&from=-7d&until=now&size=500',
+                               CURLOPT_RETURNTRANSFER => true,
+                               CURLOPT_USERPWD => 'avnesh:loggly18'
+                             ));
+
+                             $output = curl_exec($ch);
+                             $jsonData = json_decode($output,true);
+                             $id = $jsonData["rsid"]["id"];
+                             curl_setopt_array($ch, array(
+                               CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/events?rsid='.$id,
+                               CURLOPT_RETURNTRANSFER => true,
+                               CURLOPT_USERPWD => 'avnesh:loggly18'
+                             ));
+                           }
+                           $_POST['selId'] = NULL;
+                           $_POST['selId12'] = NULL;
+                           $_POST['searchField'] = NULL;  
+                           $totalLogData = curl_exec($ch);
+                           return json_decode($totalLogData, true);
+                        }
+
+
+                          
+
+                        public function diplayDataUI()
+                        {
+                            $jsons = $this->extractData();
+
+                            // code for showing data on UI
+                            foreach ($jsons as $key=>$value)
+                            { 
+                               if($key=="total_events")
+                               {
+                                 echo "<div style='margin-top=-100px;'><p style='font-size: 30px;'>".$value." Events</p></div>";
+                               }
+
+                               if($key == "events")
+                               {
+                                 echo "<div style='background-color:#E6E4D1; height: 30px;'><p style='margin-left:10px;'>Events:</p>"."</div>";
+                                 $k = json_decode($value, true);
+                                 foreach ($value as $arr) 
+                                 {
+                                    echo "<div style='margin-top:6px;' class='list'>";
+                                    echo "<span>";
+                                    foreach ($arr as $key1 => $value1)
                                     {
-                                        echo "<p class='glyphicon glyphicon-chevron-right'>&nbsp;"."\"".$value1."\""."</p>";
-                                    }
-                                }
-                                echo "<ul class='ulBullet glyphicon glyphicon-chevron-down'>";
-                                
-                                foreach ($arr as $key1 => $value1) 
-                                {
-                                    echo "<li>";
-                                    if($key1 == "tags")
-                                    {
-                                        echo "<p style='font-size: 15px;'>".$key1.":</p>";
-                                        echo "<ul class='ulBullet' style='margin-left:9px;'>[";
-                                        foreach ($value1 as $value2) 
+                                        if($key1=="logmsg")
                                         {
-                                            echo "<li>\"";
-                                            echo $value2;
-                                            echo "\"".","."</li>";
+                                            echo "<p class='glyphicon glyphicon-chevron-right'>&nbsp;"."\"".$value1."\""."</p>";
                                         }
-                                        echo "],</ul>";
                                     }
-                                    
-                                    if($key1=="timestamp")
+                                    echo "<ul class='ulBullet glyphicon glyphicon-chevron-down'>";
+
+                                    foreach ($arr as $key1 => $value1) 
                                     {
-                                        echo "<p style='font-size: 15px;'  style='margin-left:9px;'>".$key1.":</p>"."<p style='margin-left:9px;'>"."\"".$value1."\""."</p>";
-                                    }
-                                    
-                                    if($key1=="logmsg")
-                                    {
-                                        echo "<p style='font-size: 15px;'>".$key1.":</p>"."<p style='margin-left:9px;'>"."\"".$value1."\""."</p>";
-                                    }
-                                    
-                                    if($key1=="event")
-                                    {
-                                        echo "<p style='font-size: 15px;'>".$key1.":</p>";
-                                        echo "<ul class='ulBullet' style='margin-left:9px;'>{";
-                                        foreach ($value1 as $key2=>$value2) 
+                                        echo "<li>";
+                                        if($key1 == "tags")
                                         {
-                                            echo "<li>".$key2.":{"."\"";
-                                            echo "<ul class='ulBullet' style='margin-left:9px;'>";
-                                            foreach ($value2 as $key3=>$value3)
+                                            echo "<p style='font-size: 15px;'>".$key1.":</p>";
+                                            echo "<ul class='ulBullet' style='margin-left:9px;'>[";
+                                            foreach ($value1 as $value2) 
                                             {
-                                                echo "<li>".$key3.":"."\"";
-                                                echo "$value3";
+                                                echo "<li>\"";
+                                                echo $value2;
+                                                echo "\"".","."</li>";
+                                            }
+                                            echo "],</ul>";
+                                        }
+
+                                        if($key1=="timestamp")
+                                        {
+                                            echo "<p style='font-size: 15px;'  style='margin-left:9px;'>".$key1.":</p>"."<p style='margin-left:9px;'>"."\"".$value1."\""."</p>";
+                                        }
+
+                                        if($key1=="logmsg")
+                                        {
+                                            echo "<p style='font-size: 15px;'>".$key1.":</p>"."<p style='margin-left:9px;'>"."\"".$value1."\""."</p>";
+                                        }
+
+                                        if($key1=="event")
+                                        {
+                                            echo "<p style='font-size: 15px;'>".$key1.":</p>";
+                                            echo "<ul class='ulBullet' style='margin-left:9px;'>{";
+                                            foreach ($value1 as $key2=>$value2) 
+                                            {
+                                                echo "<li>".$key2.":{"."\"";
+                                                echo "<ul class='ulBullet' style='margin-left:9px;'>";
+                                                foreach ($value2 as $key3=>$value3)
+                                                {
+                                                    echo "<li>".$key3.":"."\"";
+                                                    echo "$value3";
+                                                    echo "\"".","."</li>";
+                                                }
+                                                echo "</ul>";
+                                                echo "\"".","."}</li>";
+                                            }
+                                            echo "}</ul>";
+                                        }
+
+                                        if($key1=="logtypes")
+                                        {
+                                            echo "<p style='font-size: 15px;'>".$key1.":</p>";
+                                            echo "<ul class='ulBullet' style='margin-left:9px;'>";
+                                            foreach ($value1 as $value3) 
+                                            {
+                                                echo "<li>\"";
+                                                echo $value3;
                                                 echo "\"".","."</li>";
                                             }
                                             echo "</ul>";
-                                            echo "\"".","."}</li>";
                                         }
-                                        echo "}</ul>";
-                                    }
-                                    
-                                    if($key1=="logtypes")
-                                    {
-                                        echo "<p style='font-size: 15px;'>".$key1.":</p>";
-                                        echo "<ul class='ulBullet' style='margin-left:9px;'>";
-                                        foreach ($value1 as $value3) 
+
+
+                                        if($key1=="id")
                                         {
-                                            echo "<li>\"";
-                                            echo $value3;
-                                            echo "\"".","."</li>";
+                                            echo "<p style='font-size: 15px;'>".$key1.":</p>"."<p>"."<p style='margin-left:9px;'>"."\"".$value1."\""."</p>";
                                         }
-                                        echo "</ul>";
+                                        echo "</li>";
                                     }
-                                    
-                                    
-                                    if($key1=="id")
-                                    {
-                                        echo "<p style='font-size: 15px;'>".$key1.":</p>"."<p>"."<p style='margin-left:9px;'>"."\"".$value1."\""."</p>";
-                                    }
-                                    echo "</li>";
+                                    echo "</ul>";
+                                    echo "</span>";
+                                    echo "<hr id='hrLine'></hr>";
+                                    echo "</div>";
                                 }
-                                echo "</ul>";
-                                echo "</span>";
-                                echo "<hr id='hrLine'></hr>";
-                                echo "</div>";
-                            }
+                             }
+
+                           }
                         }
-                        
                     }
+                    $objUI = new LogglyClass();
+                    $objUI->diplayDataUI();
                 ?>
+                    
               </div>
           </div>
       </div>
@@ -313,7 +339,20 @@
                 
             }
         </script>
-        
+        <script type="text/javascript">
+         jQuery(document).ready(function(){
+
+          jQuery('select#selId').val('<?php echo $_POST['selId'];?>');
+
+         });
+        </script>
+        <script type="text/javascript">
+         jQuery(document).ready(function(){
+
+          jQuery('select#selId12').val('<?php echo $_POST['selId12'];?>');
+
+         });
+        </script>
         
         
         
@@ -328,4 +367,3 @@
       <script type="text/javascript" src="http://silviomoreto.github.io/bootstrap-select/javascripts/bootstrap-select.js"></script>
     </body>
 </html>
-

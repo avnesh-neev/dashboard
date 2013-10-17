@@ -1,4 +1,5 @@
 <!--here this php code used for sending mail if user register-->
+
 <?php
     require_once "Mail.php";
     $name = $_POST['name'];

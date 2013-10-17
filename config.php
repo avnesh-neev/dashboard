@@ -1,4 +1,5 @@
 <!--here this php code used for connect to database -->
+
 <?php
 $con = mysqli_connect("localhost","root","root","errorLogManagement");
 if (mysqli_connect_errno())

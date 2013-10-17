@@ -18,13 +18,10 @@
         <title>Avnesh-Dashboard</title>
         <link href="/dashboard/dist/css/bootstrap.css" rel="stylesheet">
         <link href="/dashboard/eternicode-bootstrap/css/datepicker.css" rel="stylesheet">
-        
-<!--        <link href="/dashboard/diQuery-collapsiblePanel.css" rel="stylesheet">-->
-<!--        <link href="/dashboard/bootstrap-select/bootstrap-select.css" rel="stylesheet">-->
-            <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
-            <link rel="stylesheet" type="text/css" media="screen" href="http://silviomoreto.github.io/bootstrap-select/stylesheets/bootstrap-select.css">
+        <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" media="screen" href="http://silviomoreto.github.io/bootstrap-select/stylesheets/bootstrap-select.css">
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-<!--        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>-->
+
         
         <style type="text/css">
             .glyphicon{}
@@ -99,17 +96,25 @@
                       <input type="text" class="form-control" name="searchField" placeholder="Field name for Search" value="*" autofocus style="height: 30px;">
                       </span>
                       <span class="floatLeft" style="margin-left: 5px;">
-                    <select class="selectpicker" id="selId" name="selName">
-                        <option value="-2d">Last 2 days</option>
-                        <option value="-1d">last 1 day</option>
-                        <option value="-12h">last 12 haurs</option>
+                    <select class="selectpicker" id="selId" name="selId">
+                        <option value="-7d" selected="selected">Last 7 days</option>
+                        <option value="-5d">Last 5 days</option>
+                        <option value="-3d">Last 3 days</option>
+                        <option value="-1M">Last 1 month</option>
+                        <option value="-2h">Last 2 hours</option>
+                        <option value="-1h">last 1 hour</option>
+                        <option value="-12h">last 12 hours</option>
+                        <option value="-10m">last 10 minutes</option>
+                        <option value="-30m">last 30 minutes</option>
                     </select>
                      </span>   
                      <span class="floatLeft" style="margin-left: 5px;">
-                    <select class="selectpicker" id="selId12" name="sizeValue">
-                        <option value="10">10 logs record</option>
-                        <option value="20">20 logs record</option>
-                        <option value="50">50 logs record</option>
+                    <select class="selectpicker" id="selId12" name="selId12">
+                        <option value="10" selected="selected">10 results per page</option>
+                        <option value="20">20 results per page</option>
+                        <option value="30">30 results per page</option>
+                        <option value="50">50 results per page</option>
+                        <option value="100">100 results per page</option>
                     </select>
                      </span>
                         <span class="floatLeft" style="margin-left: 5px; margin-top: 5px;">
@@ -131,7 +136,7 @@
 <!--                  here this php code will fatch data from server, here curl Php has used--> 
 
                   <?php                 
-                  if($_POST['selName'] && $_POST['sizeValue'] && $_POST['searchField']){
+                  if($_POST['selId'] && $_POST['selId12'] && $_POST['searchField']){
                     $ch = curl_init();
                     curl_setopt_array($ch, array(
                         CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/search?q='.$_POST['searchField'].'&from='.$_POST['selName'].'&until=now&size='.$_POST['sizeValue'],
@@ -152,7 +157,7 @@
                   else{
                       $ch = curl_init();
                     curl_setopt_array($ch, array(
-                        CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/search?q=*&from=-2d&until=now&size=500',
+                        CURLOPT_URL => 'http://avneshshakya.loggly.com/apiv2/search?q=*&from=-7d&until=now&size=500',
                         CURLOPT_RETURNTRANSFER => true,
                         CURLOPT_USERPWD => 'avnesh:loggly18'
                     ));
@@ -305,7 +310,20 @@
                 
             }
         </script>
-        
+        <script type="text/javascript">
+         jQuery(document).ready(function(){
+
+          jQuery('select#selId').val('<?php echo $_POST['selId'];?>');
+
+         });
+        </script>
+        <script type="text/javascript">
+         jQuery(document).ready(function(){
+
+          jQuery('select#selId12').val('<?php echo $_POST['selId12'];?>');
+
+         });
+        </script>
         
         
         
@@ -317,8 +335,8 @@
         
         
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-      <script type="text/javascript" src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
-      <script type="text/javascript" src="http://silviomoreto.github.io/bootstrap-select/javascripts/bootstrap-select.js"></script>
+        <script type="text/javascript" src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="http://silviomoreto.github.io/bootstrap-select/javascripts/bootstrap-select.js"></script>
     </body>
 </html>
 
