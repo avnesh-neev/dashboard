@@ -293,7 +293,7 @@
                        }
                     }
                 }
-                $objUI = new LogglyClass();
+                $objUI = new LogglySearchClass();
                 $objUI->diplayDataUI();
                 
            ?>
